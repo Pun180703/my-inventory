@@ -3,104 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUT Two-Bin System - Cloud Database</title>
+    <title>SUT Two-Bin Online System</title>
     <style>
-        :root {
-            --primary-dark: #1a252f;
-            --primary-blue: #2980b9;
-            --success-green: #27ae60;
-            --danger-red: #c0392b;
-            --warning-orange: #d35400;
-            --bg-color: #f4f6f7;
-            --card-bg: #ffffff;
-        }
+        :root { --primary-dark: #1a252f; --primary-blue: #2980b9; --success-green: #27ae60; --danger-red: #c0392b; --warning-orange: #d35400; --bg-color: #f4f6f7; --card-bg: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; color: #333; }
-        
-        /* Login UI */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--primary-dark); }
-        .login-box { background: white; padding: 35px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .login-box h1 { font-size: 20px; margin-bottom: 25px; color: var(--primary-dark); border-bottom: 2px solid var(--primary-blue); padding-bottom: 10px; }
+        .login-box { background: white; padding: 30px; border-radius: 12px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-
-        /* Main App Area */
         #main-app { display: none; }
-        .navbar { background-color: var(--primary-dark); display: flex; align-items: center; padding: 0 20px; height: 60px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
-        .nav-title { font-weight: bold; border-right: 1px solid #34495e; padding-right: 20px; margin-right: 20px; font-size: 16px; }
-        
+        .navbar { background-color: var(--primary-dark); display: flex; align-items: center; padding: 0 20px; height: 60px; color: white; }
+        .nav-title { font-weight: bold; border-right: 1px solid #34495e; padding-right: 20px; margin-right: 20px; }
         .dropdown { position: relative; display: inline-block; }
         .dropbtn { background-color: var(--primary-blue); color: white; padding: 10px 18px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .dropdown-content { display: none; position: absolute; background-color: white; min-width: 220px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1000; border-radius: 4px; }
+        .dropdown-content { display: none; position: absolute; background-color: white; min-width: 200px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1000; border-radius: 4px; }
         .dropdown-content button { color: #333; padding: 12px 16px; display: block; width: 100%; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #eee; }
-        .dropdown-content button:hover { background-color: #f1f1f1; }
         .dropdown:hover .dropdown-content { display: block; }
-
-        .user-info { margin-left: auto; color: #bdc3c7; font-size: 13px; display: flex; align-items: center; gap: 15px; }
-
         .container { padding: 20px; max-width: 1600px; margin: 0 auto; }
-        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content { display: none; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
         .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .table-container { overflow-x: auto; background: white; border: 1px solid #ddd; max-height: 70vh; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
         th, td { padding: 10px 8px; text-align: center; border: 1px solid #ddd; }
         th { background-color: #34495e; color: white; position: sticky; top: 0; z-index: 10; }
         .text-left { text-align: left; }
-        input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 3px; font-weight: bold; }
+        input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; font-weight: bold; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; }
         .bg-red { background-color: #fadbd8; color: #943126; }
         .bg-green { background-color: #d5f5e3; color: #1e8449; }
-        .highlight-orange { background-color: #fff9c4; font-weight: bold; color: #d35400; }
+        .highlight-orange { background-color: #fff9c4; color: #d35400; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box">
-            <h1>🔓 ROP Cloud Login</h1>
+            <h1>🔓 ROP System Login</h1>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
             <button onclick="handleLogin()">เข้าสู่ระบบ</button>
-            <p style="font-size: 11px; color:#666; margin-top:15px;">Admin: user=admin, pass=1234<br>Staff: user=staff, pass=5678</p>
+            <p style="font-size: 11px; color:#666; margin-top:15px;">Admin: admin / 1234 | Staff: staff / 5678</p>
         </div>
     </div>
 
     <div id="main-app">
         <div class="navbar">
-            <div class="nav-title">🏭 LOGISTICS CONTROL</div>
+            <div class="nav-title">🏭 SUT LOGISTICS</div>
             <div class="dropdown">
-                <button class="dropbtn">☰ เลือกหน้า ▼</button>
+                <button class="dropbtn">☰ เมนู ▼</button>
                 <div class="dropdown-content">
-                    <button onclick="openTab('tab-staff')">👷 1. หน้าพนักงาน (กรอกยอดใช้)</button>
-                    <button id="m-admin" onclick="openTab('tab-admin')">⚙️ 2. หน้าแอดมิน (คลังสินค้า)</button>
-                    <button id="m-report" onclick="openTab('tab-report')">📊 3. สรุปสั่งซื้อ & เติมของ</button>
+                    <button onclick="openTab('tab-staff')">👷 1. พนักงาน (กรอกยอด)</button>
+                    <button id="m-admin" onclick="openTab('tab-admin')">⚙️ 2. แอดมิน (คลัง)</button>
+                    <button id="m-report" onclick="openTab('tab-report')">📊 3. สรุปสั่งซื้อ</button>
                 </div>
             </div>
-            <div class="user-info">
-                <span id="user-display">👤 ผู้ใช้งาน: -</span>
-                <button onclick="location.reload()" style="background:#c0392b; color:white; border:none; padding:5px 12px; border-radius:4px; cursor:pointer;">Logout</button>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 15px; color: white;">
+                <span id="user-display">👤 ผู้ใช้: -</span>
+                <button onclick="location.reload()" style="background:#c0392b; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Logout</button>
             </div>
         </div>
 
         <div class="container">
-            <div id="loading" style="display:none; text-align:center; padding:20px; font-weight:bold; color:var(--primary-blue);">⏳ กำลังซิงค์ข้อมูลกับ Google Sheets...</div>
-
+            <div id="loading" style="display:none; text-align:center; padding:30px; font-weight:bold;">⏳ กำลังโหลดข้อมูลจาก Cloud...</div>
+            
             <div id="tab-staff" class="tab-content">
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2>📝 บันทึกยอดการใช้งานแยกตาม Project (บันทึกลง Cloud)</h2>
-                        <button id="save-btn" class="dropbtn" style="background:var(--success-green);" onclick="saveUsage()">💾 บันทึกยอดทั้งหมด</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h2>📝 บันทึกยอดการใช้งานแยก Project</h2>
+                        <button class="dropbtn" style="background:var(--success-green);" id="save-btn" onclick="saveUsage()">💾 บันทึกยอดลง Cloud</button>
                     </div>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th><th class="text-left">SAP Code / รายละเอียด</th><th>สต็อกจริง</th>
+                                    <th>No.</th><th class="text-left">SAP Code / รายละเอียด</th><th>คงเหลือ</th>
                                     <th style="background:#f39c12; color:white;">P1</th><th style="background:#f39c12; color:white;">P2</th>
                                     <th style="background:#f39c12; color:white;">P3</th><th style="background:#f39c12; color:white;">P4</th>
-                                    <th>รวมใช้</th><th>แก้ไขโดย</th>
+                                    <th>รวมใช้</th><th>โดย</th>
                                 </tr>
                             </thead>
                             <tbody id="staffBody"></tbody>
@@ -114,7 +94,7 @@
                     <h3>🛠️ ฐานข้อมูล Master Data (จาก Google Sheets)</h3>
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>ITM</th><th>SAP Code</th><th class="text-left">DESCRIPTION</th><th>QTY</th><th>BIN 1</th><th>BIN 2</th><th>STOCK</th><th>TOTAL</th></tr></thead>
+                            <thead><tr><th>ITM</th><th>SAP Code</th><th class="text-left">DESCRIPTION</th><th>Pack</th><th>BIN 1</th><th>BIN 2</th><th>STOCK</th><th>TOTAL</th></tr></thead>
                             <tbody id="adminBody"></tbody>
                         </table>
                     </div>
@@ -123,13 +103,13 @@
 
             <div id="tab-report" class="tab-content">
                 <div class="card">
-                    <h2>📊 รายงานสรุปสั่งซื้อ & ยอดเติม (#REF! = 1 Week)</h2>
+                    <h2>📊 รายงานสั่งซื้อและยอดเติม (#REF! = 1 Week)</h2>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th>SAP Code</th><th class="text-left">รายละเอียด</th><th>คงเหลือ</th><th>ใช้/Wk</th><th>MIN</th>
-                                    <th style="background:#fff9c4; color:#d35400;">ยกมาเติม (Refill)</th><th>สั่งเพิ่ม (Order)</th><th>MAX</th><th>สถานะ</th>
+                                    <th style="background:#fff9c4;">ยกมาเติม</th><th>สั่ง PO</th><th>MAX</th><th>สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody id="reportBody"></tbody>
@@ -141,9 +121,7 @@
     </div>
 
     <script>
-        // เชื่อมต่อกับ URL ที่คุณส่งมา
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmxYlZn58Dtxc34NElrclMMLXaB43q7EkBWC1PbMCzdboJRQehw4ZrpB-9MiKBFkgtAw/exec';
-
         let user = null;
         let db = [];
 
@@ -152,17 +130,14 @@
             const p = document.getElementById('password').value;
             if (u === "admin" && p === "1234") user = {n: "แอดมิน", r: "admin"};
             else if (u === "staff" && p === "5678") user = {n: "พนักงาน", r: "staff"};
-            else return alert("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!");
+            else return alert("❌ ชื่อผู้ใช้หรือรหัสผ่านผิด!");
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            document.getElementById('user-display').innerText = `👤 ผู้ใช้: ${user.n}`;
+            document.getElementById('user-display').innerText = `👤 ${user.n}`;
             
-            const isAdmin = user.r === "admin";
-            document.getElementById('m-admin').style.display = isAdmin ? 'block' : 'none';
-            document.getElementById('m-report').style.display = isAdmin ? 'block' : 'none';
-            
-            await loadData(); // ดึงข้อมูลทันทีเมื่อ Login สำเร็จ
+            document.getElementById('m-admin').style.display = document.getElementById('m-report').style.display = (user.r==="admin"?"block":"none");
+            await loadData();
         }
 
         async function loadData() {
@@ -171,12 +146,8 @@
                 const response = await fetch(SCRIPT_URL);
                 db = await response.json();
                 render();
-                if(!document.querySelector('.tab-content.active')) {
-                    document.getElementById('tab-staff').classList.add('active');
-                }
-            } catch (e) {
-                alert("เกิดข้อผิดพลาดในการโหลดข้อมูลจาก Cloud!");
-            }
+                if(!document.querySelector('.tab-content.active')) document.getElementById('tab-staff').classList.add('active');
+            } catch (e) { alert("เกิดข้อผิดพลาดในการดึงข้อมูล!"); }
             document.getElementById('loading').style.display = 'none';
         }
 
@@ -191,34 +162,26 @@
                 const sap = row.getAttribute('data-sap');
                 const item = db.find(x => x.sap == sap);
                 if (item) {
-                    const p1 = parseFloat(row.querySelector('.p1').value) || 0;
-                    const p2 = parseFloat(row.querySelector('.p2').value) || 0;
-                    const p3 = parseFloat(row.querySelector('.p3').value) || 0;
-                    const p4 = parseFloat(row.querySelector('.p4').value) || 0;
-                    const total = p1+p2+p3+p4;
-                    if (item.usageTotal !== total) {
-                        item.p1=p1; item.p2=p2; item.p3=p3; item.p4=p4;
-                        item.usageTotal = total; item.lastUpdateBy = user.n;
-                    }
+                    item.p1 = parseFloat(row.querySelector('.p1').value) || 0;
+                    item.p2 = parseFloat(row.querySelector('.p2').value) || 0;
+                    item.p3 = parseFloat(row.querySelector('.p3').value) || 0;
+                    item.p4 = parseFloat(row.querySelector('.p4').value) || 0;
+                    item.usageTotal = item.p1 + item.p2 + item.p3 + item.p4;
+                    item.lastUpdateBy = user.n;
                 }
             });
 
             const btn = document.getElementById('save-btn');
-            btn.innerText = "⏳ กำลังบันทึกลง Cloud...";
+            btn.innerText = "⏳ กำลังบันทึก...";
             btn.disabled = true;
 
             try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(db)
-                });
-                alert("✅ บันทึกข้อมูลสำเร็จ! ทุกเครื่องจะเห็นยอดนี้พร้อมกัน");
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(db) });
+                alert("✅ บันทึกสำเร็จ!");
                 await loadData();
-            } catch (e) {
-                alert("เกิดข้อผิดพลาดในการบันทึก!");
-            }
+            } catch (e) { alert("บันทึกล้มเหลว!"); }
             
-            btn.innerText = "💾 บันทึกยอดทั้งหมด";
+            btn.innerText = "💾 บันทึกยอดลง Cloud";
             btn.disabled = false;
         }
 
@@ -226,23 +189,20 @@
             const s = document.getElementById('staffBody');
             const a = document.getElementById('adminBody');
             const r = document.getElementById('reportBody');
-            if(!s || !a || !r) return;
-            
             s.innerHTML = a.innerHTML = r.innerHTML = '';
 
             db.forEach((item, i) => {
                 const totalInStore = (Number(item.b1)||0) + (Number(item.b2)||0) + (Number(item.st)||0);
                 const actual = totalInStore - (Number(item.usageTotal)||0);
 
-                s.innerHTML += `<tr data-sap="${item.sap}"><td>${i+1}</td><td class="text-left"><b>${item.sap}</b><br><small>${item.desc}</small></td><td style="font-weight:bold;">${actual}</td><td><input type="number" class="p1" value="${item.p1||0}"></td><td><input type="number" class="p2" value="${item.p2||0}"></td><td><input type="number" class="p3" value="${item.p3||0}"></td><td><input type="number" class="p4" value="${item.p4||0}"></td><td style="background:#eee; font-weight:bold;">${item.usageTotal||0}</td><td><small>${item.lastUpdateBy||"-"}</small></td></tr>`;
+                s.innerHTML += `<tr data-sap="${item.sap}"><td>${i+1}</td><td class="text-left"><b>${item.sap}</b><br><small>${item.desc}</small></td><td>${actual}</td><td><input type="number" class="p1" value="${item.p1||0}"></td><td><input type="number" class="p2" value="${item.p2||0}"></td><td><input type="number" class="p3" value="${item.p3||0}"></td><td><input type="number" class="p4" value="${item.p4||0}"></td><td>${item.usageTotal||0}</td><td><small>${item.lastUpdateBy||"-"}</small></td></tr>`;
                 
-                a.innerHTML += `<tr><td>${item.itm}</td><td><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${item.qty}</td><td>${item.b1}</td><td>${item.b2}</td><td>${item.st}</td><td style="font-weight:bold;">${totalInStore}</td></tr>`;
+                a.innerHTML += `<tr><td>${item.itm}</td><td><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${item.qty}</td><td>${item.b1}</td><td>${item.b2}</td><td>${item.st}</td><td>${totalInStore}</td></tr>`;
                 
-                const refill = Math.max(0, (item.max||0) - actual);
                 const isShort = actual <= (item.min||0);
                 const orderQty = isShort ? Math.ceil(((item.max||0) - actual) / (item.qty || 1)) * (item.qty || 1) : 0;
                 
-                r.innerHTML += `<tr><td class="text-left"><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td style="font-weight:bold;">${actual}</td><td>${item.usageTotal||0}</td><td style="color:red;">${item.min||0}</td><td class="highlight-orange">${refill.toLocaleString()}</td><td style="color:blue; font-weight:bold;">${orderQty.toLocaleString()}</td><td style="background:#f9f9f9; font-weight:bold;">${item.max||0}</td><td><span class="status-badge ${isShort?'bg-red':'bg-green'}">${isShort?'🔴 สั่งด่วน':'🟢 ปกติ'}</span></td></tr>`;
+                r.innerHTML += `<tr><td class="text-left"><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${actual}</td><td>${item.usageTotal||0}</td><td style="color:red;">${item.min||0}</td><td class="highlight-orange">${Math.max(0, (item.max||0)-actual)}</td><td style="color:blue; font-weight:bold;">${orderQty}</td><td>${item.max||0}</td><td><span class="status-badge ${isShort?'bg-red':'bg-green'}">${isShort?'🔴 สั่งด่วน':'🟢 ปกติ'}</span></td></tr>`;
             });
         }
     </script>
