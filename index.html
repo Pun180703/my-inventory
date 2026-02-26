@@ -21,7 +21,8 @@
         .dropdown:hover .dropdown-content { display: block; }
         .container { padding: 20px; max-width: 1600px; margin: 0 auto; }
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .table-container { overflow-x: auto; background: white; border: 1px solid #ddd; max-height: 70vh; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
@@ -29,10 +30,8 @@
         th { background-color: #34495e; color: white; position: sticky; top: 0; z-index: 10; }
         .text-left { text-align: left; }
         input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; font-weight: bold; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; }
         .bg-red { background-color: #fadbd8; color: #943126; }
         .bg-green { background-color: #d5f5e3; color: #1e8449; }
-        .highlight-orange { background-color: #fff9c4; color: #d35400; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -66,7 +65,6 @@
 
         <div class="container">
             <div id="loading" style="display:none; text-align:center; padding:30px; font-weight:bold;">⏳ กำลังโหลดข้อมูลจาก Cloud...</div>
-            
             <div id="tab-staff" class="tab-content">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -80,7 +78,7 @@
                                     <th>No.</th><th class="text-left">SAP Code / รายละเอียด</th><th>คงเหลือ</th>
                                     <th style="background:#f39c12; color:white;">P1</th><th style="background:#f39c12; color:white;">P2</th>
                                     <th style="background:#f39c12; color:white;">P3</th><th style="background:#f39c12; color:white;">P4</th>
-                                    <th>รวมใช้</th><th>โดย</th>
+                                    <th>รวมใช้</th><th>บันทึกโดย</th>
                                 </tr>
                             </thead>
                             <tbody id="staffBody"></tbody>
@@ -88,54 +86,24 @@
                     </div>
                 </div>
             </div>
-
-            <div id="tab-admin" class="tab-content">
-                <div class="card">
-                    <h3>🛠️ ฐานข้อมูล Master Data (จาก Google Sheets)</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>ITM</th><th>SAP Code</th><th class="text-left">DESCRIPTION</th><th>Pack</th><th>BIN 1</th><th>BIN 2</th><th>STOCK</th><th>TOTAL</th></tr></thead>
-                            <tbody id="adminBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-report" class="tab-content">
-                <div class="card">
-                    <h2>📊 รายงานสั่งซื้อและยอดเติม (#REF! = 1 Week)</h2>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>SAP Code</th><th class="text-left">รายละเอียด</th><th>คงเหลือ</th><th>ใช้/Wk</th><th>MIN</th>
-                                    <th style="background:#fff9c4;">ยกมาเติม</th><th>สั่ง PO</th><th>MAX</th><th>สถานะ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="reportBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <div id="tab-admin" class="tab-content"><div class="card"><h3>🛠️ Master Data (Google Sheets)</h3><div class="table-container"><table><thead><tr><th>ITM</th><th>SAP Code</th><th class="text-left">DESCRIPTION</th><th>Pack</th><th>BIN 1</th><th>BIN 2</th><th>STOCK</th><th>TOTAL</th></tr></thead><tbody id="adminBody"></tbody></table></div></div></div>
+            <div id="tab-report" class="tab-content"><div class="card"><h2>📊 รายงานสรุปสั่งซื้อ</h2><div class="table-container"><table><thead><tr><th>SAP Code</th><th class="text-left">รายละเอียด</th><th>คงเหลือ</th><th>ใช้/Wk</th><th>MIN</th><th>ยกมาเติม</th><th>สั่ง PO</th><th>MAX</th><th>สถานะ</th></tr></thead><tbody id="reportBody"></tbody></table></div></div></div>
         </div>
     </div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmxYlZn58Dtxc34NElrclMMLXaB43q7EkBWC1PbMCzdboJRQehw4ZrpB-9MiKBFkgtAw/exec';
-        let user = null;
-        let db = [];
+        let user = null; let db = [];
 
         async function handleLogin() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
             if (u === "admin" && p === "1234") user = {n: "แอดมิน", r: "admin"};
             else if (u === "staff" && p === "5678") user = {n: "พนักงาน", r: "staff"};
-            else return alert("❌ ชื่อผู้ใช้หรือรหัสผ่านผิด!");
-
+            else return alert("❌ รหัสผ่านผิด!");
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
             document.getElementById('user-display').innerText = `👤 ${user.n}`;
-            
             document.getElementById('m-admin').style.display = document.getElementById('m-report').style.display = (user.r==="admin"?"block":"none");
             await loadData();
         }
@@ -170,39 +138,25 @@
                     item.lastUpdateBy = user.n;
                 }
             });
-
-            const btn = document.getElementById('save-btn');
-            btn.innerText = "⏳ กำลังบันทึก...";
-            btn.disabled = true;
-
+            document.getElementById('save-btn').innerText = "⏳ กำลังบันทึก...";
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(db) });
-                alert("✅ บันทึกสำเร็จ!");
-                await loadData();
+                alert("✅ บันทึกสำเร็จ!"); await loadData();
             } catch (e) { alert("บันทึกล้มเหลว!"); }
-            
-            btn.innerText = "💾 บันทึกยอดลง Cloud";
-            btn.disabled = false;
+            document.getElementById('save-btn').innerText = "💾 บันทึกยอดลง Cloud";
         }
 
         function render() {
-            const s = document.getElementById('staffBody');
-            const a = document.getElementById('adminBody');
-            const r = document.getElementById('reportBody');
+            const s = document.getElementById('staffBody'); const a = document.getElementById('adminBody'); const r = document.getElementById('reportBody');
             s.innerHTML = a.innerHTML = r.innerHTML = '';
-
             db.forEach((item, i) => {
                 const totalInStore = (Number(item.b1)||0) + (Number(item.b2)||0) + (Number(item.st)||0);
                 const actual = totalInStore - (Number(item.usageTotal)||0);
-
                 s.innerHTML += `<tr data-sap="${item.sap}"><td>${i+1}</td><td class="text-left"><b>${item.sap}</b><br><small>${item.desc}</small></td><td>${actual}</td><td><input type="number" class="p1" value="${item.p1||0}"></td><td><input type="number" class="p2" value="${item.p2||0}"></td><td><input type="number" class="p3" value="${item.p3||0}"></td><td><input type="number" class="p4" value="${item.p4||0}"></td><td>${item.usageTotal||0}</td><td><small>${item.lastUpdateBy||"-"}</small></td></tr>`;
-                
                 a.innerHTML += `<tr><td>${item.itm}</td><td><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${item.qty}</td><td>${item.b1}</td><td>${item.b2}</td><td>${item.st}</td><td>${totalInStore}</td></tr>`;
-                
                 const isShort = actual <= (item.min||0);
                 const orderQty = isShort ? Math.ceil(((item.max||0) - actual) / (item.qty || 1)) * (item.qty || 1) : 0;
-                
-                r.innerHTML += `<tr><td class="text-left"><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${actual}</td><td>${item.usageTotal||0}</td><td style="color:red;">${item.min||0}</td><td class="highlight-orange">${Math.max(0, (item.max||0)-actual)}</td><td style="color:blue; font-weight:bold;">${orderQty}</td><td>${item.max||0}</td><td><span class="status-badge ${isShort?'bg-red':'bg-green'}">${isShort?'🔴 สั่งด่วน':'🟢 ปกติ'}</span></td></tr>`;
+                r.innerHTML += `<tr><td class="text-left"><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${actual}</td><td>${item.usageTotal||0}</td><td style="color:red;">${item.min||0}</td><td style="background:#fff9c4; color:#d35400; font-weight:bold;">${Math.max(0, (item.max||0)-actual)}</td><td style="color:blue; font-weight:bold;">${orderQty}</td><td>${item.max||0}</td><td><span class="status-badge ${isShort?'bg-red':'bg-green'}">${isShort?'🔴 สั่งด่วน':'🟢 ปกติ'}</span></td></tr>`;
             });
         }
     </script>
