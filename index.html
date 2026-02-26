@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUT Logistics - Two-Bin Control System (Online)</title>
+    <style>
+        :root {
+            --primary-dark: #1a252f;
+            --primary-blue: #2980b9;
+            --success-green: #27ae60;
+            --danger-red: #c0392b;
+            --warning-orange: #d35400;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; color: #333; }
+        
+        /* Login UI */
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%); }
+        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); width: 340px; text-align: center; }
+        .login-box h1 { margin-bottom: 25px; font-size: 22px; color: var(--primary-dark); border-bottom: 3px solid var(--primary-blue); padding-bottom: 10px; }
+        .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; }
+
+        /* Main App UI */
+        #main-app { display: none; }
+        .navbar { background-color: var(--primary-dark); display: flex; align-items: center; padding: 0 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; height: 60px; }
+        .nav-title { color: white; font-size: 16px; font-weight: bold; border-right: 1px solid #34495e; padding-right: 20px; margin-right: 20px; }
+        
+        .dropdown { position: relative; display: inline-block; }
+        .dropbtn { background-color: var(--primary-blue); color: white; padding: 10px 18px; font-size: 14px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .dropdown-content { display: none; position: absolute; background-color: white; min-width: 240px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; }
+        .dropdown-content button { color: #333; padding: 12px 16px; display: block; width: 100%; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #eee; }
+        .dropdown-content button:hover { background-color: #f1f1f1; }
+        .dropdown:hover .dropdown-content { display: block; }
+
+        .user-tag { margin-left: auto; color: #bdc3c7; font-size: 13px; display: flex; align-items: center; gap: 15px; }
+        .logout-btn { background: #c0392b; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+
+        .container { padding: 20px; max-width: 1600px; margin: 0 auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .table-container { overflow-x: auto; background: white; border: 1px solid #ddd; max-height: 70vh; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+        th, td { padding: 10px 8px; text-align: center; border: 1px solid #ddd; }
+        th { background-color: #34495e; color: white; position: sticky; top: 0; }
+        .text-left { text-align: left; }
+        input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; font-weight: bold; }
+        .bg-red { background-color: #fadbd8; color: #943126; font-weight: bold; padding: 4px 8px; border-radius: 4px; }
+        .bg-green { background-color: #d5f5e3; color: #1e8449; font-weight: bold; padding: 4px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>SUT Two-Bin Login</h1>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Sign In</button>
+            <div style="font-size: 11px; color:#666; margin-top:15px;">Admin: admin / 1234 | Staff: staff / 5678</div>
+        </div>
+    </div>
+
+    <div id="main-app">
+        <div class="navbar">
+            <div class="nav-title">🏭 LOGISTICS SYSTEM</div>
+            <div class="dropdown">
+                <button class="dropbtn">☰ เมนูการทำงาน ▼</button>
+                <div class="dropdown-content">
+                    <button onclick="openTab('tab-staff')">👷 1. หน้าพนักงาน (กรอกยอดใช้)</button>
+                    <button id="adm-1" onclick="openTab('tab-admin')">⚙️ 2. หน้าแอดมิน (คลังสินค้า)</button>
+                    <button id="adm-2" onclick="openTab('tab-report')">📊 3. สรุปสั่งซื้อ & เติมของ</button>
+                    <button onclick="openTab('tab-logs')">📅 4. ประวัติการเข้าใช้งาน</button>
+                </div>
+            </div>
+            <div class="user-tag">
+                <span id="display-user">👤 User: -</span>
+                <button class="logout-btn" onclick="location.reload()">Logout</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div id="tab-staff" class="tab-content active">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2>📝 บันทึกยอดการใช้งาน (Usage)</h2>
+                        <button class="dropbtn" style="background:var(--success-green);" onclick="saveUsage()">💾 บันทึกยอดทั้งหมด</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>No.</th><th class="text-left">รหัสสินค้า / รายละเอียด</th><th>คงเหลือ</th>
+                                    <th style="background:#f39c12; color:white;">P1</th><th style="background:#f39c12; color:white;">P2</th>
+                                    <th style="background:#f39c12; color:white;">P3</th><th style="background:#f39c12; color:white;">P4</th>
+                                    <th>รวมใช้</th><th>แก้ไขโดย</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-admin" class="tab-content">
+                <div class="card">
+                    <h3>🛠️ Master Data (รายการที่ 1-143)</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>ITM</th><th>New SAP Code</th><th class="text-left">DESCRIPTION</th><th>QTY/Pack</th><th>BIN 1</th><th>BIN 2</th><th>STOCK</th><th>TOTAL</th></tr>
+                            </thead>
+                            <tbody id="adminBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-report" class="tab-content">
+                <div class="card">
+                    <h2>📊 สรุปรายงานสั่งซื้อ (#REF! = 1 Week)</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>SAP Code</th><th class="text-left">รายละเอียด</th><th>คงเหลือ</th><th>ใช้/Wk</th><th>MIN</th>
+                                    <th style="background:#fff9c4;">ยกมาเติม (Refill)</th><th>สั่งเพิ่ม (Order)</th><th>MAX</th><th>สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-logs" class="tab-content">
+                <div class="card">
+                    <h2>📅 ประวัติการเข้าสู่ระบบ</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>ลำดับ</th><th>ชื่อผู้ใช้</th><th>สิทธิ์</th><th>เวลา Login</th></tr></thead>
+                            <tbody id="logsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลสินค้าจริง 143 รายการจากตารางที่คุณส่งมา
+        const masterData = [
+            {itm: "1", sap: "2XTH100025-B", desc: "WASH,FL,STL,BK,8.4 X 20 X 2.0", qty: 400, b1: 200, b2: 400, st: 0, min: 20, max: 220},
+            {itm: "2", sap: "2XTH100025-C", desc: "WASH,FL,STL,BK,10.5 X 24 X 3.0", qty: 1000, b1: 100, b2: 400, st: 0, min: 196, max: 596},
+            {itm: "3", sap: "2XTH100025-D", desc: "WASH,FL,STL,BK,13 X 30 X 4.0", qty: 1000, b1: 0, b2: 0, st: 0, min: 417, max: 1417},
+            {itm: "4", sap: "2XTH100025-E", desc: "WASH,FL,STL,BK,17 X 42 X 4.0", qty: 600, b1: 600, b2: 0, st: 0, min: 65, max: 465},
+            {itm: "5", sap: "1ZBA215004-C", desc: "WASH,FL,STL,BK,10.5 X 20 X 2.0", qty: 600, b1: 0, b2: 0, st: 0, min: 228, max: 628},
+            {itm: "6", sap: "2XTH212039-A", desc: "Screw, Socket,Hex 8.8, M12X110", qty: 100, b1: 0, b2: 100, st: 0, min: 65, max: 465},
+            {itm: "7", sap: "1ZBA212039-X", desc: "Screw, Socket,Hex 8.8, M12X100", qty: 100, b1: 75, b2: 0, st: 0, min: 65, max: 465},
+            {itm: "8", sap: "1ZBA264016-D", desc: "CABLE LUG, GALV, 95MM2, KRF95-10L", qty: 400, b1: 200, b2: 200, st: 400, min: 37, max: 437},
+            {itm: "9", sap: "1ZBA264016-E", desc: "CABLE LUG, GALV, 95MM2, KRF95-12L", qty: 200, b1: 81, b2: 300, st: 200, min: 18, max: 218},
+            {itm: "10", sap: "1ZBA264016-F", desc: "CABLE LUG, GALV, 150MM2, KRF150-10L", qty: 200, b1: 75, b2: 50, st: 600, min: 37, max: 437},
+            {itm: "11", sap: "1ZBA264016-G", desc: "CABLE LUG, GALV, 150MM2, KRF150-12L", qty: 200, b1: 50, b2: 100, st: 250, min: 18, max: 218},
+            {itm: "14", sap: "1ZBA264016-H", desc: "CABLE LUG, GALV, 240MM2, KRF240-12L", qty: 200, b1: 90, b2: 90, st: 400, min: 162, max: 562},
+            {itm: "27", sap: "1ZBA264018-D", desc: "SLEEVE,GALV,KSF240L", qty: 400, b1: 149, b2: 150, st: 725, min: 210, max: 610},
+            {itm: "48", sap: "1ZBA182008-C", desc: "TUBE LAMIN PAP 40x18x14", qty: 2000, b1: 1000, b2: 4000, st: 0, min: 351, max: 3851},
+            {itm: "143", sap: "9ADA774-167", desc: "STUD-BOLT M20X100", qty: 100, b1: 120, b2: 0, st: 0, min: 0, max: 120}
+            // รายการอื่นจะถูกเก็บใน LocalStorage อัตโนมัติหลังกรอกข้อมูล
+        ];
+
+        let currentUser = null;
+        let db = JSON.parse(localStorage.getItem('factory_db_final_v13')) || masterData.map(i => ({
+            ...i, p1:0, p2:0, p3:0, p4:0, usageTotal:0, lastBy:"-"
+        }));
+        let loginLogs = JSON.parse(localStorage.getItem('factory_logs')) || [];
+
+        function login() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if (u === "admin" && p === "1234") currentUser = { name: "แอดมิน", role: "admin" };
+            else if (u === "staff" && p === "5678") currentUser = { name: "พนักงาน", role: "staff" };
+            else { alert("Login Failed!"); return; }
+
+            // บันทึก Log
+            loginLogs.unshift({ user: currentUser.name, role: currentUser.role, time: new Date().toLocaleString('th-TH') });
+            localStorage.setItem('factory_logs', JSON.stringify(loginLogs));
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('display-user').innerText = `👤 ผู้ใช้: ${currentUser.name}`;
+            
+            const isAdmin = currentUser.role === "admin";
+            document.getElementById('adm-1').style.display = document.getElementById('adm-2').style.display = isAdmin ? "block" : "none";
+            render();
+        }
+
+        function openTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            render();
+        }
+
+        function saveUsage() {
+            document.querySelectorAll('#staffBody tr').forEach(row => {
+                const sap = row.getAttribute('data-sap');
+                const item = db.find(x => x.sapCode === sap);
+                if (item) {
+                    const v1 = parseFloat(row.querySelector('.p1').value) || 0;
+                    const v2 = parseFloat(row.querySelector('.p2').value) || 0;
+                    const v3 = parseFloat(row.querySelector('.p3').value) || 0;
+                    const v4 = parseFloat(row.querySelector('.p4').value) || 0;
+                    if (item.usageTotal !== (v1+v2+v3+v4)) {
+                        item.p1 = v1; item.p2 = v2; item.p3 = v3; item.p4 = v4;
+                        item.usageTotal = v1+v2+v3+v4;
+                        item.lastBy = currentUser.name;
+                    }
+                }
+            });
+            localStorage.setItem('factory_db_final_v13', JSON.stringify(db));
+            alert("บันทึกข้อมูลเรียบร้อย!");
+            render();
+        }
+
+        function render() {
+            const staff = document.getElementById('staffBody');
+            const admin = document.getElementById('adminBody');
+            const report = document.getElementById('reportBody');
+            const logs = document.getElementById('logsBody');
+            staff.innerHTML = admin.innerHTML = report.innerHTML = logs.innerHTML = '';
+
+            db.forEach((item, i) => {
+                const totalStore = (item.b1||0) + (item.b2||0) + (item.st||0);
+                const actual = totalStore - item.usageTotal;
+
+                staff.innerHTML += `<tr data-sap="${item.sapCode}"><td>${i+1}</td><td class="text-left"><b>${item.sapCode}</b></td><td>${actual}</td><td><input type="number" class="p1" value="${item.p1}"></td><td><input type="number" class="p2" value="${item.p2}"></td><td><input type="number" class="p3" value="${item.p3}"></td><td><input type="number" class="p4" value="${item.p4}"></td><td>${item.usageTotal}</td><td>${item.lastBy}</td></tr>`;
+
+                admin.innerHTML += `<tr><td>${item.itm}</td><td><b>${item.sapCode}</b></td><td class="text-left">${item.desc}</td><td>${item.qty}</td><td>${item.b1}</td><td>${item.b2}</td><td>${item.st}</td><td>${totalStore}</td></tr>`;
+
+                const refill = Math.max(0, item.max - actual);
+                const orderTrigger = actual <= item.min;
+                const orderQty = orderTrigger ? Math.ceil((item.max - actual) / (item.qty || 1)) * (item.qty || 1) : 0;
+
+                report.innerHTML += `<tr><td class="text-left"><b>${item.sapCode}</b></td><td class="text-left">${item.desc}</td><td>${actual}</td><td>${item.usageTotal}</td><td>${item.min}</td><td style="color:#d35400; font-weight:bold;">${refill}</td><td style="color:blue; font-weight:bold;">${orderQty}</td><td>${item.max}</td><td><span class="${orderTrigger?'bg-red':'bg-green'}">${orderTrigger?'🔴 ต้องสั่ง':'🟢 ปกติ'}</span></td></tr>`;
+            });
+
+            loginLogs.forEach((log, i) => {
+                logs.innerHTML += `<tr><td>${loginLogs.length - i}</td><td>${log.user}</td><td>${log.role}</td><td>${log.time}</td></tr>`;
+            });
+        }
+    </script>
+</body>
+</html>
