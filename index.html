@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUT Two-Bin System - 143 Items Complete</title>
+    <title>SUT Two-Bin System - Cloud Database</title>
     <style>
         :root {
             --primary-dark: #1a252f;
@@ -23,22 +23,24 @@
         .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-        /* Main App UI */
+        /* Main App Area */
         #main-app { display: none; }
-        .navbar { background-color: var(--primary-dark); display: flex; align-items: center; padding: 0 20px; height: 60px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
-        .nav-title { color: white; font-size: 16px; font-weight: bold; padding: 15px 0; margin-right: 30px; border-right: 1px solid #34495e; padding-right: 20px; }
+        .navbar { background-color: var(--primary-dark); display: flex; align-items: center; padding: 0 20px; height: 60px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
+        .nav-title { font-weight: bold; border-right: 1px solid #34495e; padding-right: 20px; margin-right: 20px; font-size: 16px; }
+        
         .dropdown { position: relative; display: inline-block; }
         .dropbtn { background-color: var(--primary-blue); color: white; padding: 10px 18px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .dropdown-content { display: none; position: absolute; background-color: white; min-width: 220px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; overflow: hidden; }
-        .dropdown-content button { color: #333; padding: 12px 16px; display: block; width: 100%; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; border-bottom: 1px solid #eee; }
+        .dropdown-content { display: none; position: absolute; background-color: white; min-width: 220px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1000; border-radius: 4px; }
+        .dropdown-content button { color: #333; padding: 12px 16px; display: block; width: 100%; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #eee; }
         .dropdown-content button:hover { background-color: #f1f1f1; }
         .dropdown:hover .dropdown-content { display: block; }
+
         .user-info { margin-left: auto; color: #bdc3c7; font-size: 13px; display: flex; align-items: center; gap: 15px; }
 
         .container { padding: 20px; max-width: 1600px; margin: 0 auto; }
         .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .table-container { overflow-x: auto; background: white; border: 1px solid #ddd; max-height: 70vh; border-radius: 4px; }
@@ -46,7 +48,7 @@
         th, td { padding: 10px 8px; text-align: center; border: 1px solid #ddd; }
         th { background-color: #34495e; color: white; position: sticky; top: 0; z-index: 10; }
         .text-left { text-align: left; }
-        input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; font-weight: bold; border-radius: 3px; }
+        input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 3px; font-weight: bold; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; }
         .bg-red { background-color: #fadbd8; color: #943126; }
         .bg-green { background-color: #d5f5e3; color: #1e8449; }
@@ -57,11 +59,11 @@
 
     <div id="login-screen">
         <div class="login-box">
-            <h1>🔓 เข้าสู่ระบบ ROP SUT</h1>
+            <h1>🔓 ROP Cloud Login</h1>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
-            <button onclick="handleLogin()">Sign In</button>
-            <p style="font-size: 11px; color:#666; margin-top:15px;">Admin: admin / 1234 | Staff: staff / 5678</p>
+            <button onclick="handleLogin()">เข้าสู่ระบบ</button>
+            <p style="font-size: 11px; color:#666; margin-top:15px;">Admin: user=admin, pass=1234<br>Staff: user=staff, pass=5678</p>
         </div>
     </div>
 
@@ -69,12 +71,11 @@
         <div class="navbar">
             <div class="nav-title">🏭 LOGISTICS CONTROL</div>
             <div class="dropdown">
-                <button class="dropbtn">☰ เลือกเมนู ▼</button>
+                <button class="dropbtn">☰ เลือกหน้า ▼</button>
                 <div class="dropdown-content">
                     <button onclick="openTab('tab-staff')">👷 1. หน้าพนักงาน (กรอกยอดใช้)</button>
                     <button id="m-admin" onclick="openTab('tab-admin')">⚙️ 2. หน้าแอดมิน (คลังสินค้า)</button>
                     <button id="m-report" onclick="openTab('tab-report')">📊 3. สรุปสั่งซื้อ & เติมของ</button>
-                    <button onclick="openTab('tab-logs')">📅 4. ประวัติการเข้าใช้งาน</button>
                 </div>
             </div>
             <div class="user-info">
@@ -84,17 +85,19 @@
         </div>
 
         <div class="container">
-            <div id="tab-staff" class="tab-content active">
+            <div id="loading" style="display:none; text-align:center; padding:20px; font-weight:bold; color:var(--primary-blue);">⏳ กำลังซิงค์ข้อมูลกับ Google Sheets...</div>
+
+            <div id="tab-staff" class="tab-content">
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <h2>📝 บันทึกยอดการใช้งานแยกตามโปรเจค</h2>
-                        <button class="dropbtn" style="background:var(--success-green);" onclick="saveUsage()">💾 บันทึกยอดทั้งหมด</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2>📝 บันทึกยอดการใช้งานแยกตาม Project (บันทึกลง Cloud)</h2>
+                        <button id="save-btn" class="dropbtn" style="background:var(--success-green);" onclick="saveUsage()">💾 บันทึกยอดทั้งหมด</button>
                     </div>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th><th class="text-left">SAP Code / รายละเอียด</th><th>สต็อกที่มี</th>
+                                    <th>No.</th><th class="text-left">SAP Code / รายละเอียด</th><th>สต็อกจริง</th>
                                     <th style="background:#f39c12; color:white;">P1</th><th style="background:#f39c12; color:white;">P2</th>
                                     <th style="background:#f39c12; color:white;">P3</th><th style="background:#f39c12; color:white;">P4</th>
                                     <th>รวมใช้</th><th>แก้ไขโดย</th>
@@ -108,7 +111,7 @@
 
             <div id="tab-admin" class="tab-content">
                 <div class="card">
-                    <h3>🛠️ ฐานข้อมูล Master Data (ครบ 143 รายการ)</h3>
+                    <h3>🛠️ ฐานข้อมูล Master Data (จาก Google Sheets)</h3>
                     <div class="table-container">
                         <table>
                             <thead><tr><th>ITM</th><th>SAP Code</th><th class="text-left">DESCRIPTION</th><th>QTY</th><th>BIN 1</th><th>BIN 2</th><th>STOCK</th><th>TOTAL</th></tr></thead>
@@ -126,22 +129,10 @@
                             <thead>
                                 <tr>
                                     <th>SAP Code</th><th class="text-left">รายละเอียด</th><th>คงเหลือ</th><th>ใช้/Wk</th><th>MIN</th>
-                                    <th style="background:#fff9c4;">ยกมาเติม (Refill)</th><th>สั่งเพิ่ม (Order)</th><th>MAX</th><th>สถานะ</th>
+                                    <th style="background:#fff9c4; color:#d35400;">ยกมาเติม (Refill)</th><th>สั่งเพิ่ม (Order)</th><th>MAX</th><th>สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody id="reportBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-logs" class="tab-content">
-                <div class="card">
-                    <h2>📅 ประวัติการเข้าสู่ระบบ</h2>
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>ลำดับ</th><th>ชื่อผู้ใช้</th><th>สิทธิ์</th><th>เวลา Login</th></tr></thead>
-                            <tbody id="logsBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -150,178 +141,43 @@
     </div>
 
     <script>
-        // ข้อมูลสินค้าครบ 143 รายการ จากตารางภาพ
-        const fullItemsData = [
-            {itm: "1", sap: "2XTH100025-B", desc: "WASH,FL,STL,BK,8.4 X 20 X 2.0", qty: 400, b1: 200, b2: 400, st: 0, min: 20, max: 220},
-            {itm: "2", sap: "2XTH100025-C", desc: "WASH,FL,STL,BK,10.5 X 24 X 3.0", qty: 1000, b1: 100, b2: 400, st: 0, min: 196, max: 596},
-            {itm: "3", sap: "2XTH100025-D", desc: "WASH,FL,STL,BK,13 X 30 X 4.0", qty: 1000, b1: 0, b2: 0, st: 0, min: 417, max: 1417},
-            {itm: "4", sap: "2XTH100025-E", desc: "WASH,FL,STL,BK,17 X 42 X 4.0", qty: 600, b1: 600, b2: 0, st: 0, min: 65, max: 465},
-            {itm: "5", sap: "1ZBA215004-C", desc: "WASH,FL,STL,BK,10.5 X 20 X 2.0", qty: 600, b1: 0, b2: 0, st: 228, min: 228, max: 628},
-            {itm: "6", sap: "2XTH212039-A", desc: "Screw, Socket,Hex 8.8, Black, M12X110", qty: 100, b1: 0, b2: 100, st: 50, min: 65, max: 465},
-            {itm: "7", sap: "1ZBA212039-X", desc: "Screw, Socket,Hex 8.8, Black, M12X100", qty: 100, b1: 75, b2: 0, st: 0, min: 65, max: 465},
-            {itm: "8", sap: "1ZBA264016-D", desc: "CABLE LUG, GALV, 95MM2, KRF95-10L", qty: 400, b1: 200, b2: 200, st: 400, min: 37, max: 437},
-            {itm: "9", sap: "1ZBA264016-E", desc: "CABLE LUG, GALV, 95MM2, KRF95-12L", qty: 200, b1: 81, b2: 300, st: 200, min: 18, max: 218},
-            {itm: "10", sap: "1ZBA264016-F", desc: "CABLE LUG, GALV, 150MM2, KRF150-10L", qty: 200, b1: 75, b2: 50, st: 600, min: 37, max: 437},
-            {itm: "11", sap: "1ZBA264016-G", desc: "CABLE LUG, GALV, 150MM2, KRF150-12L", qty: 200, b1: 50, b2: 100, st: 250, min: 18, max: 218},
-            {itm: "12", sap: "1ZBA264016-AE", desc: "CABLE LUG, GALV, 185MM2, KRF185-10L", qty: 100, b1: 85, b2: 0, st: 100, min: 185, max: 185},
-            {itm: "13", sap: "1ZBA264016-AF", desc: "CABLE LUG, GALV, 185MM2, KRF185-12L", qty: 100, b1: 0, b2: 0, st: 100, min: 100, max: 100},
-            {itm: "14", sap: "1ZBA264016-H", desc: "CABLE LUG, GALV, 240MM2, KRF240-12L", qty: 200, b1: 90, b2: 90, st: 400, min: 162, max: 562},
-            {itm: "15", sap: "1ZBA264016-J", desc: "CABLE LUG, GALV, 240MM2, KRF240-16L", qty: 100, b1: 20, b2: 40, st: 100, min: 190, max: 190},
-            {itm: "16", sap: "1ZBA264016-K", desc: "CABLE LUG, GALV, 400MM2, KRF400-12L", qty: 300, b1: 0, b2: 0, st: 0, min: 18, max: 218},
-            {itm: "17", sap: "1ZBA264016-L", desc: "CABLE LUG, GALV, 400MM2, KRF400-16L", qty: 200, b1: 27, b2: 60, st: 0, min: 288, max: 288},
-            {itm: "18", sap: "1ZBA264019-E", desc: "2 HOLES TERMINAL CONNECTOR", qty: 10, b1: 0, b2: 0, st: 22, min: 22, max: 22},
-            {itm: "19", sap: "1ZBA264017-B", desc: "CABLE LUG, GALV, 95MM2, 90GR", qty: 100, b1: 70, b2: 0, st: 100, min: 18, max: 218},
-            {itm: "20", sap: "1ZBA264017-C", desc: "CABLE LUG, GALV, 150MM2, 90GR", qty: 100, b1: 85, b2: 100, st: 100, min: 18, max: 218},
-            {itm: "21", sap: "1ZBA264017-D", desc: "CABLE LUG, GALV, 150MM2, 90GR", qty: 100, b1: 0, b2: 0, st: 200, min: 18, max: 218},
-            {itm: "22", sap: "1ZBA264017-E", desc: "CABLE LUG, GALV, 240MM2, 90GR", qty: 200, b1: 105, b2: 0, st: 0, min: 18, max: 218},
-            {itm: "22b", sap: "1ZBA264017-F", desc: "CABLE LUG, GALV, 240MM2, 90GR-F", qty: 100, b1: 90, b2: 210, st: 0, min: 18, max: 218},
-            {itm: "23", sap: "1ZBA264017-S", desc: "CABLE LUG, GALV, 120MM2, 90GR", qty: 500, b1: 0, b2: 0, st: 500, min: 18, max: 218},
-            {itm: "24", sap: "1ZBA264018-B", desc: "SLEEVE,GALV,KSF95L,95 MM2", qty: 500, b1: 500, b2: 0, st: 0, min: 46, max: 546},
-            {itm: "25", sap: "1ZBA264018-C", desc: "SLEEVE,GALV,KSF150L,150 MM2", qty: 500, b1: 0, b2: 200, st: 100, min: 46, max: 546},
-            {itm: "26", sap: "1ZBA264018-K", desc: "SLEEVE,GALV,KSF185L,185 MM2", qty: 200, b1: 137, b2: 0, st: 100, min: 46, max: 546},
-            {itm: "27", sap: "1ZBA264018-D", desc: "SLEEVE,GALV,KSF240L,240 MM2", qty: 400, b1: 149, b2: 150, st: 725, min: 210, max: 610},
-            {itm: "28", sap: "1ZBA264018-E", desc: "SLEEVE,GALV,KSF400L,400 MM2", qty: 200, b1: 9, b2: 110, st: 200, min: 18, max: 418},
-            {itm: "29", sap: "1ZBA264020-D", desc: "SLEEVE,GALV,KSF95-50L", qty: 500, b1: 18, b2: 500, st: 0, min: 0, max: 0},
-            {itm: "30", sap: "1ZBA264020-G", desc: "SLEEVE,GALV,KSF150-50L", qty: 100, b1: 70, b2: 100, st: 0, min: 0, max: 0},
-            {itm: "31", sap: "1ZBA264020-H", desc: "SLEEVE,GALV,KSF150-95L", qty: 100, b1: 0, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "32", sap: "1ZBA264020-Z", desc: "SLEEVE,GALV,KSF240-95L", qty: 100, b1: 100, b2: 100, st: 0, min: 0, max: 0},
-            {itm: "33", sap: "1ZBA264020-A", desc: "SLEEVE,GALV,KSF240-150L", qty: 100, b1: 100, b2: 100, st: 0, min: 0, max: 0},
-            {itm: "34", sap: "1ZBA264020-S", desc: "SLEEVE,GALV,KSF400-95L", qty: 50, b1: 49, b2: 50, st: 200, min: 0, max: 0},
-            {itm: "35", sap: "1ZBA264020-AA", desc: "CONECTOR 400-150 MM2", qty: 50, b1: 0, b2: 0, st: 200, min: 0, max: 0},
-            {itm: "36", sap: "1ZBA264020-C", desc: "SLEEVE,GALV,KSF400-240L", qty: 50, b1: 45, b2: 100, st: 0, min: 0, max: 0},
-            {itm: "37", sap: "1ZBA264014-A", desc: "SLEEVE,KTSF50-110GR", qty: 100, b1: 200, b2: 200, st: 0, min: 18, max: 218},
-            {itm: "38", sap: "1ZBA264014-B", desc: "SLEEVE,KTSF95-110GR", qty: 50, b1: 0, b2: 0, st: 175, min: 18, max: 218},
-            {itm: "39", sap: "1ZBA264014-C", desc: "SLEEVE,KTSF150-110GR", qty: 50, b1: 56, b2: 0, st: 100, min: 15, max: 165},
-            {itm: "40", sap: "1ZBA264014-H", desc: "SLEEVE,KTSF185-110GR", qty: 50, b1: 114, b2: 450, st: 0, min: 0, max: 0},
-            {itm: "41", sap: "1ZBA264014-D", desc: "SLEEVE,KTSF240-110GR", qty: 50, b1: 0, b2: 32, st: 50, min: 15, max: 165},
-            {itm: "42", sap: "1ZBA264012-A", desc: "SLEEVE,KTSF50-90", qty: 100, b1: 98, b2: 200, st: 0, min: 18, max: 218},
-            {itm: "43", sap: "1ZBA264012-B", desc: "SLEEVE,KTSF95-90", qty: 50, b1: 0, b2: 173, st: 0, min: 18, max: 218},
-            {itm: "44", sap: "1ZBA264012-C", desc: "SLEEVE,KTSF150-90", qty: 50, b1: 0, b2: 211, st: 0, min: 18, max: 218},
-            {itm: "45", sap: "1ZBA264012-K", desc: "SLEEVE,KTSF185-90", qty: 50, b1: 200, b2: 490, st: 0, min: 0, max: 0},
-            {itm: "46", sap: "1ZBA264012-D", desc: "SLEEVE,KTSF240-90", qty: 50, b1: 109, b2: 0, st: 0, min: 15, max: 165},
-            {itm: "47", sap: "1ZBA264012-E", desc: "SLEEVE,KTSF400-90", qty: 50, b1: 10, b2: 0, st: 318, min: 18, max: 68},
-            {itm: "48", sap: "1ZBA182008-C", desc: "TUBE LAMIN PAP 14mm", qty: 2000, b1: 1000, b2: 4000, st: 0, min: 351, max: 3851},
-            {itm: "49", sap: "1ZBA182008-D", desc: "TUBE LAMIN PAP 20mm", qty: 2000, b1: 500, b2: 1000, st: 0, min: 1689, max: 6689},
-            {itm: "50", sap: "1ZBA212006-E", desc: "SQUARE NUT PLASTIC M16", qty: 5000, b1: 1000, b2: 5000, st: 5000, min: 462, max: 5462},
-            {itm: "51", sap: "1ZBA212005-AB", desc: "STUD BOLT M16X1900", qty: 100, b1: 0, b2: 60, st: 100, min: 0, max: 0},
-            {itm: "52", sap: "1ZBA212005-DE", desc: "STUD BOLT M16X95", qty: 800, b1: 200, b2: 800, st: 0, min: 0, max: 0},
-            {itm: "53", sap: "1ZBA212005-DH", desc: "STUD BOLT M16X105", qty: 800, b1: 100, b2: 800, st: 0, min: 0, max: 0},
-            {itm: "54", sap: "1ZBA212005-DL", desc: "STUD BOLT M16X115", qty: 800, b1: 100, b2: 800, st: 0, min: 0, max: 0},
-            {itm: "55", sap: "1ZBA212005-DP", desc: "STUD BOLT M16X125", qty: 800, b1: 0, b2: 800, st: 0, min: 0, max: 0},
-            {itm: "56", sap: "1ZBA212005-DT", desc: "STUD BOLT M16X135", qty: 800, b1: 0, b2: 600, st: 0, min: 0, max: 0},
-            {itm: "57", sap: "1ZBA212005-DW", desc: "STUD BOLT M16X145", qty: 800, b1: 300, b2: 0, st: 800, min: 0, max: 0},
-            {itm: "58", sap: "1ZBA212005-DZ", desc: "STUD BOLT M16X155", qty: 800, b1: 100, b2: 800, st: 0, min: 0, max: 0},
-            {itm: "59", sap: "1ZBA212005-M", desc: "STUD BOLT M16X160", qty: 800, b1: 0, b2: 800, st: 0, min: 0, max: 0},
-            {itm: "60", sap: "1ZBA212005-N", desc: "STUD BOLT M16X170", qty: 200, b1: 300, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "61", sap: "1ZBA212005-P", desc: "STUD BOLT M16X180", qty: 200, b1: 300, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "62", sap: "1ZBA212005-S", desc: "STUD BOLT M16X200", qty: 400, b1: 0, b2: 400, st: 0, min: 0, max: 0},
-            {itm: "63", sap: "9ADA316-8", desc: "WASH,FL,SS 316,21X37", qty: 2000, b1: 0, b2: 600, st: 2000, min: 154, max: 2154},
-            {itm: "64", sap: "9ADA774-406", desc: "STUD,SS 304,M8X1000", qty: 10, b1: 18, b2: 0, st: 450, min: 1, max: 10},
-            {itm: "65", sap: "9ADA774-408", desc: "STUD,SS 304,M10X1000", qty: 10, b1: 48, b2: 0, st: 300, min: 1, max: 10},
-            {itm: "66", sap: "9ADA774-410", desc: "STUD,SS 304,M12X1000", qty: 20, b1: 20, b2: 0, st: 20, min: 18, max: 30},
-            {itm: "67", sap: "2XTH100025-F", desc: "CABLE LUG,M6", qty: 1500, b1: 300, b2: 0, st: 0, min: 117, max: 1617},
-            {itm: "68", sap: "2XTH100025-G", desc: "CABLE LUG,35MM2,M10", qty: 300, b1: 250, b2: 0, st: 0, min: 22, max: 322},
-            {itm: "69", sap: "2XTH100025-H", desc: "CABLE LUG,35MM2,M12", qty: 600, b1: 300, b2: 0, st: 0, min: 31, max: 331},
-            {itm: "70", sap: "2XTH100025-J", desc: "CABLE LUG,120MM2,M12", qty: 200, b1: 200, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "71", sap: "2XTH100025-K", desc: "CABLE LUG,240MM2,M16", qty: 100, b1: 37, b2: 60, st: 0, min: 8, max: 108},
-            {itm: "72", sap: "1ZTH215000-AD", desc: "CABLE STRAP,NYLON,YL", qty: 500, b1: 300, b2: 500, st: 0, min: 31, max: 531},
-            {itm: "73", sap: "1ZTH215000-AE", desc: "CABLE STRAP,NYLON,YL-14", qty: 500, b1: 0, b2: 500, st: 0, min: 60, max: 460},
-            {itm: "74", sap: "1ZBA215024-A", desc: "O-RING,19.2 X 3.0", qty: 200, b1: 0, b2: 200, st: 0, min: 7, max: 207},
-            {itm: "75", sap: "1ZTH215024-G", desc: "O-RING,29.2 X 3.0", qty: 200, b1: 10, b2: 200, st: 0, min: 22, max: 322},
-            {itm: "76", sap: "1ZTH215024-A", desc: "O-RING,31 X 3.0", qty: 200, b1: 0, b2: 180, st: 0, min: 15, max: 215},
-            {itm: "77", sap: "1ZTH215024-B", desc: "O-RING,36 X 3.0", qty: 200, b1: 100, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "78", sap: "1ZBA215024-E", desc: "O-RING,39.2 X 3.0", qty: 200, b1: 20, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "79", sap: "1ZBA215024-F", desc: "O-RING,44.2 X 3.0", qty: 200, b1: 150, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "80", sap: "1ZTH215024-AT", desc: "O-RING,44.2 X 5.7", qty: 600, b1: 300, b2: 600, st: 0, min: 172, max: 772},
-            {itm: "81", sap: "1ZBA215024-AV", desc: "O-RING,64.2 X 5.7", qty: 600, b1: 400, b2: 600, st: 0, min: 46, max: 646},
-            {itm: "82", sap: "1ZBA215024-AX", desc: "O-RING,74 X 5.7", qty: 200, b1: 100, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "83", sap: "1ZTH215024-C", desc: "O-RING,100.97 X 5.33", qty: 600, b1: 300, b2: 600, st: 0, min: 290, max: 490},
-            {itm: "84", sap: "1ZBA215024-AY", desc: "O-RING,104 X 5.7", qty: 200, b1: 50, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "85", sap: "1ZTH215024-D", desc: "O-RING,106 X 5.7", qty: 200, b1: 50, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "86", sap: "1ZTH215024-U", desc: "O-RING,109 X 5.7", qty: 200, b1: 50, b2: 200, st: 0, min: 15, max: 215},
-            {itm: "87", sap: "1ZBA215024-AZ", desc: "O-RING,134.3 X 5.7", qty: 300, b1: 10, b2: 300, st: 0, min: 70, max: 170},
-            {itm: "88", sap: "1ZBA215024-CB", desc: "O-RING,164.1 X 8.4", qty: 100, b1: 0, b2: 100, st: 0, min: 70, max: 170},
-            {itm: "89", sap: "1ZBA215024-Z", desc: "O-RING,159.3 X 5.7", qty: 300, b1: 175, b2: 300, st: 0, min: 70, max: 170},
-            {itm: "90", sap: "1ZBA215024-AC", desc: "O-RING,189.3 X 5.7", qty: 200, b1: 200, b2: 200, st: 0, min: 70, max: 170},
-            {itm: "91", sap: "1ZBA215024-AM", desc: "O-RING,229.1 X 8.4", qty: 100, b1: 100, b2: 100, st: 0, min: 70, max: 170},
-            {itm: "92", sap: "1ZBA183012-B", desc: "FIBRE PIN,D=6,L=70", qty: 600, b1: 0, b2: 100, st: 900, min: 46, max: 546},
-            {itm: "93", sap: "1ZBA212005-AH", desc: "Threaded glass bolt,m10", qty: 500, b1: 500, b2: 500, st: 0, min: 46, max: 546},
-            {itm: "94", sap: "1ZTH263000-AY", desc: "TERM-BLOCK,CERAMIC", qty: 100, b1: 100, b2: 100, st: 0, min: 6, max: 106},
-            {itm: "95", sap: "1ZTH252000-C", desc: "JUNCTION BOX,JB3", qty: 50, b1: 14, b2: 50, st: 0, min: 35, max: 85},
-            {itm: "96", sap: "1ZTH263000-AC", desc: "WIRE END CAP,35MM2", qty: 1000, b1: 200, b2: 400, st: 1000, min: 8, max: 208},
-            {itm: "97", sap: "1ZTH263000-AA", desc: "WIRE END CAP,125MM2", qty: 100, b1: 20, b2: 0, st: 200, min: 8, max: 108},
-            {itm: "98", sap: "1ZTH263000-AB", desc: "WIRE END CAP,250MM2", qty: 50, b1: 17, b2: 120, st: 0, min: 4, max: 54},
-            {itm: "99", sap: "1ZTH215200-C", desc: "Cork gasket ID145", qty: 100, b1: 0, b2: 0, st: 100, min: 4, max: 54},
-            {itm: "100", sap: "1ZTH215200-AP", desc: "Cork gasket OD230", qty: 100, b1: 0, b2: 0, st: 100, min: 4, max: 54},
-            {itm: "101", sap: "1ZTH464500-AE", desc: "CABLE GLAND,D=18-21", qty: 500, b1: 0, b2: 0, st: 500, min: 113, max: 613},
-            {itm: "102", sap: "1ZTH464500-AF", desc: "CABLE GLAND,D=22-23", qty: 400, b1: 0, b2: 0, st: 197, min: 25, max: 425},
-            {itm: "103", sap: "1ZTH215000-AG", desc: "BLIND PLUG,514/16", qty: 200, b1: 300, b2: 0, st: 0, min: 15, max: 215},
-            {itm: "104", sap: "1ZTH215100-C1", desc: "WASH,SPRING,13X22X3", qty: 2000, b1: 0, b2: 1500, st: 0, min: 305, max: 1305},
-            {itm: "105", sap: "1ZTH215100-E", desc: "WASH,TOOTHED,SS 316", qty: 500, b1: 500, b2: 0, st: 0, min: 37, max: 537},
-            {itm: "106", sap: "1ZTH212014-D", desc: "NUT,HEX,STS,BK,M12", qty: 800, b1: 0, b2: 700, st: 0, min: 62, max: 862},
-            {itm: "107", sap: "1ZTH211600-C", desc: "SCRW,HEX,SS 316,UNC 1/2-13x1", qty: 500, b1: 200, b2: 500, st: 0, min: 240, max: 266},
-            {itm: "108", sap: "9ADJ400628P0622", desc: "HEX-HD-SCR_M30X80", qty: 100, b1: 12, b2: 25, st: 100, min: 24, max: 59},
-            {itm: "109", sap: "9ADA120-64", desc: "SCRW,HEX,M12 X 55", qty: 1000, b1: 50, b2: 1000, st: 0, min: 0, max: 0},
-            {itm: "110", sap: "1ZBA216009-C", desc: "U-Bolt pipe hanger DN25", qty: 400, b1: 350, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "111", sap: "1ZBA216009-H", desc: "U-BOLT PIPE HANGER-80NB", qty: 200, b1: 200, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "112", sap: "1ZBA212006-BT", desc: "SQUARE NUT M10x10", qty: 1000, b1: 0, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "113", sap: "9ADA774-84", desc: "STUD-BOLT M10X55", qty: 500, b1: 100, b2: 500, st: 0, min: 0, max: 0},
-            {itm: "114", sap: "9ADA774-108", desc: "STUD-BOLT M12X55", qty: 400, b1: 200, b2: 400, st: 0, min: 0, max: 0},
-            {itm: "115", sap: "9ADA774-503", desc: "STUD-BOLT M12X85", qty: 100, b1: 70, b2: 100, st: 0, min: 0, max: 0},
-            {itm: "116", sap: "9ADA774-132", desc: "STUD-BOLT M16X50", qty: 200, b1: 100, b2: 100, st: 200, min: 0, max: 0},
-            {itm: "117", sap: "9ADA774-133", desc: "STUD-BOLT M16X55", qty: 100, b1: 130, b2: 200, st: 200, min: 0, max: 0},
-            {itm: "118", sap: "9ADA774-163", desc: "STUD-BOLT M20X70", qty: 100, b1: 80, b2: 200, st: 0, min: 0, max: 0},
-            {itm: "119", sap: "9ADA774-165", desc: "STUD-BOLT M20X80", qty: 100, b1: 70, b2: 200, st: 100, min: 0, max: 0},
-            {itm: "120", sap: "2XTH771-B", desc: "STUD-BOLT M20X85", qty: 100, b1: 50, b2: 200, st: 100, min: 0, max: 0},
-            {itm: "121", sap: "9ADJ312352P0210", desc: "HEX-HD-SCR M5X20", qty: 300, b1: 110, b2: 300, st: 0, min: 0, max: 0},
-            {itm: "122", sap: "1ZTH216100-A", desc: "U-Bolt Radiator DN80", qty: 100, b1: 100, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "123", sap: "1ZTH216100-B", desc: "U-Bolt Radiator DN100", qty: 100, b1: 100, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "124", sap: "1ZBA216009-J", desc: "U-Clamp for 100NB", qty: 100, b1: 100, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "125", sap: "2XTH100014-IA", desc: "Hose connector 8mm", qty: 100, b1: 0, b2: 95, st: 0, min: 0, max: 0},
-            {itm: "126", sap: "2XTH100014-IB", desc: "Hose connector 8mm-B", qty: 100, b1: 100, b2: 100, st: 0, min: 0, max: 0},
-            {itm: "127", sap: "9ADA774-81", desc: "STUD-BOLT M10X40", qty: 500, b1: 100, b2: 0, st: 0, min: 0, max: 0},
-            {itm: "128", sap: "9ADA774-83", desc: "STUD-BOLT M10X50", qty: 200, b1: 400, b2: 800, st: 0, min: 0, max: 0},
-            {itm: "129", sap: "9ADA774-87", desc: "STUD-BOLT M10X70", qty: 200, b1: 50, b2: 0, st: 200, min: 0, max: 0},
-            {itm: "130", sap: "9ADA774-105", desc: "STUD-BOLT M12X40", qty: 500, b1: 400, b2: 0, st: 200, min: 0, max: 0},
-            {itm: "131", sap: "9ADA774-106", desc: "M12x45 PASLANMAZ", qty: 1000, b1: 100, b2: 500, st: 0, min: 0, max: 0},
-            {itm: "132", sap: "9ADA774-107", desc: "STUD-BOLT M12X50", qty: 1000, b1: 100, b2: 500, st: 0, min: 0, max: 0},
-            {itm: "133", sap: "9ADA774-109", desc: "STUD-BOLT M12X60", qty: 500, b1: 160, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "134", sap: "9ADA774-110", desc: "STUD-BOLT M12X65", qty: 400, b1: 200, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "135", sap: "9ADA774-111", desc: "M12x70 PASLANMAZ", qty: 1000, b1: 40, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "136", sap: "9ADA774-113", desc: "M12x80 PASLANMAZ", qty: 500, b1: 0, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "137", sap: "9ADA774-114", desc: "ESPARRAGO M12*90mm INOX", qty: 500, b1: 80, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "138", sap: "9ADA774-130", desc: "STUD-BOLT M12X95", qty: 500, b1: 50, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "139", sap: "9ADA774-134", desc: "STUD-BOLT M16X60", qty: 1000, b1: 0, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "140", sap: "9ADA774-136", desc: "STUD-BOLT M16X70", qty: 500, b1: 0, b2: 0, st: 500, min: 0, max: 0},
-            {itm: "141", sap: "9ADA774-138", desc: "STUD-BOLT M16X80", qty: 100, b1: 100, b2: 700, st: 500, min: 0, max: 0},
-            {itm: "142", sap: "9ADA774-140", desc: "STUD-BOLT M16X100", qty: 1000, b1: 100, b2: 0, st: 400, min: 0, max: 500},
-            {itm: "143", sap: "9ADA774-167", desc: "STUD-BOLT M20X100", qty: 100, b1: 120, b2: 0, st: 0, min: 0, max: 120}
-        ];
+        // เชื่อมต่อกับ URL ที่คุณส่งมา
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmxYlZn58Dtxc34NElrclMMLXaB43q7EkBWC1PbMCzdboJRQehw4ZrpB-9MiKBFkgtAw/exec';
 
         let user = null;
-        // ใช้เวอร์ชันฐานข้อมูลใหม่เพื่อรีเซ็ตข้อมูล undefined เดิม
-        let db = JSON.parse(localStorage.getItem('factory_db_v16_final')) || fullItemsData.map(i => ({
-            ...i, p1:0, p2:0, p3:0, p4:0, totalU:0, lastBy:"-"
-        }));
-        let logs = JSON.parse(localStorage.getItem('factory_logs_v16')) || [];
+        let db = [];
 
-        function handleLogin() {
+        async function handleLogin() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
             if (u === "admin" && p === "1234") user = {n: "แอดมิน", r: "admin"};
             else if (u === "staff" && p === "5678") user = {n: "พนักงาน", r: "staff"};
-            else return alert("❌ รหัสผ่านผิด!");
-
-            logs.unshift({n: user.n, r: user.r, t: new Date().toLocaleString('th-TH')});
-            localStorage.setItem('factory_logs_v16', JSON.stringify(logs));
+            else return alert("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!");
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
-            document.getElementById('user-display').innerText = `👤 ${user.n} (${user.r})`;
+            document.getElementById('user-display').innerText = `👤 ผู้ใช้: ${user.n}`;
             
-            document.getElementById('m-admin').style.display = document.getElementById('m-report').style.display = (user.r==="admin"?"block":"none");
-            render();
-            renderLogs();
+            const isAdmin = user.r === "admin";
+            document.getElementById('m-admin').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('m-report').style.display = isAdmin ? 'block' : 'none';
+            
+            await loadData(); // ดึงข้อมูลทันทีเมื่อ Login สำเร็จ
+        }
+
+        async function loadData() {
+            document.getElementById('loading').style.display = 'block';
+            try {
+                const response = await fetch(SCRIPT_URL);
+                db = await response.json();
+                render();
+                if(!document.querySelector('.tab-content.active')) {
+                    document.getElementById('tab-staff').classList.add('active');
+                }
+            } catch (e) {
+                alert("เกิดข้อผิดพลาดในการโหลดข้อมูลจาก Cloud!");
+            }
+            document.getElementById('loading').style.display = 'none';
         }
 
         function openTab(id) {
@@ -330,53 +186,63 @@
             render();
         }
 
-        function saveUsage() {
+        async function saveUsage() {
             document.querySelectorAll('#staffBody tr').forEach(row => {
                 const sap = row.getAttribute('data-sap');
-                const item = db.find(x => x.sap === sap);
+                const item = db.find(x => x.sap == sap);
                 if (item) {
-                    item.p1 = parseFloat(row.querySelector('.p1').value) || 0;
-                    item.p2 = parseFloat(row.querySelector('.p2').value) || 0;
-                    item.p3 = parseFloat(row.querySelector('.p3').value) || 0;
-                    item.p4 = parseFloat(row.querySelector('.p4').value) || 0;
-                    item.totalU = item.p1 + item.p2 + item.p3 + item.p4;
-                    item.lastBy = user.n;
+                    const p1 = parseFloat(row.querySelector('.p1').value) || 0;
+                    const p2 = parseFloat(row.querySelector('.p2').value) || 0;
+                    const p3 = parseFloat(row.querySelector('.p3').value) || 0;
+                    const p4 = parseFloat(row.querySelector('.p4').value) || 0;
+                    const total = p1+p2+p3+p4;
+                    if (item.usageTotal !== total) {
+                        item.p1=p1; item.p2=p2; item.p3=p3; item.p4=p4;
+                        item.usageTotal = total; item.lastUpdateBy = user.n;
+                    }
                 }
             });
-            localStorage.setItem('factory_db_v16_final', JSON.stringify(db));
-            alert("✅ บันทึกยอดเรียบร้อย!");
-            render();
-        }
 
-        function renderLogs() {
-            const body = document.getElementById('logsBody');
-            body.innerHTML = logs.map((log, i) => `
-                <tr><td>${logs.length - i}</td><td><b>${log.n}</b></td><td>${log.r}</td><td>${log.t}</td></tr>
-            `).join('');
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "⏳ กำลังบันทึกลง Cloud...";
+            btn.disabled = true;
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(db)
+                });
+                alert("✅ บันทึกข้อมูลสำเร็จ! ทุกเครื่องจะเห็นยอดนี้พร้อมกัน");
+                await loadData();
+            } catch (e) {
+                alert("เกิดข้อผิดพลาดในการบันทึก!");
+            }
+            
+            btn.innerText = "💾 บันทึกยอดทั้งหมด";
+            btn.disabled = false;
         }
 
         function render() {
             const s = document.getElementById('staffBody');
             const a = document.getElementById('adminBody');
             const r = document.getElementById('reportBody');
+            if(!s || !a || !r) return;
+            
             s.innerHTML = a.innerHTML = r.innerHTML = '';
 
             db.forEach((item, i) => {
-                const totalInStore = (item.b1||0) + (item.b2||0) + (item.st||0);
-                const actual = totalInStore - item.totalU;
+                const totalInStore = (Number(item.b1)||0) + (Number(item.b2)||0) + (Number(item.st)||0);
+                const actual = totalInStore - (Number(item.usageTotal)||0);
 
-                // Tab 1
-                s.innerHTML += `<tr data-sap="${item.sap}"><td>${i+1}</td><td class="text-left"><b>${item.sap}</b><br><small>${item.desc}</small></td><td style="font-weight:bold;">${actual}</td><td><input type="number" class="p1" value="${item.p1}"></td><td><input type="number" class="p2" value="${item.p2}"></td><td><input type="number" class="p3" value="${item.p3}"></td><td><input type="number" class="p4" value="${item.p4}"></td><td>${item.totalU}</td><td><small>${item.lastBy}</small></td></tr>`;
+                s.innerHTML += `<tr data-sap="${item.sap}"><td>${i+1}</td><td class="text-left"><b>${item.sap}</b><br><small>${item.desc}</small></td><td style="font-weight:bold;">${actual}</td><td><input type="number" class="p1" value="${item.p1||0}"></td><td><input type="number" class="p2" value="${item.p2||0}"></td><td><input type="number" class="p3" value="${item.p3||0}"></td><td><input type="number" class="p4" value="${item.p4||0}"></td><td style="background:#eee; font-weight:bold;">${item.usageTotal||0}</td><td><small>${item.lastUpdateBy||"-"}</small></td></tr>`;
                 
-                // Tab 2
-                a.innerHTML += `<tr><td>${item.itm}</td><td><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${item.qty}</td><td>${item.b1}</td><td>${item.b2}</td><td>${item.st}</td><td>${totalInStore}</td></tr>`;
+                a.innerHTML += `<tr><td>${item.itm}</td><td><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${item.qty}</td><td>${item.b1}</td><td>${item.b2}</td><td>${item.st}</td><td style="font-weight:bold;">${totalInStore}</td></tr>`;
                 
-                // Tab 3
-                const refill = Math.max(0, item.max - actual);
-                const needsOrder = actual <= item.min;
-                const orderQty = needsOrder ? Math.ceil((item.max - actual) / (item.qty || 1)) * (item.qty || 1) : 0;
+                const refill = Math.max(0, (item.max||0) - actual);
+                const isShort = actual <= (item.min||0);
+                const orderQty = isShort ? Math.ceil(((item.max||0) - actual) / (item.qty || 1)) * (item.qty || 1) : 0;
                 
-                r.innerHTML += `<tr><td class="text-left"><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td>${actual}</td><td>${item.totalU}</td><td>${item.min}</td><td class="highlight-orange">${refill.toLocaleString()}</td><td style="color:blue; font-weight:bold;">${orderQty.toLocaleString()}</td><td>${item.max}</td><td><span class="status-badge ${needsOrder?'bg-red':'bg-green'}">${needsOrder?'🔴 สั่งด่วน':'🟢 ปกติ'}</span></td></tr>`;
+                r.innerHTML += `<tr><td class="text-left"><b>${item.sap}</b></td><td class="text-left">${item.desc}</td><td style="font-weight:bold;">${actual}</td><td>${item.usageTotal||0}</td><td style="color:red;">${item.min||0}</td><td class="highlight-orange">${refill.toLocaleString()}</td><td style="color:blue; font-weight:bold;">${orderQty.toLocaleString()}</td><td style="background:#f9f9f9; font-weight:bold;">${item.max||0}</td><td><span class="status-badge ${isShort?'bg-red':'bg-green'}">${isShort?'🔴 สั่งด่วน':'🟢 ปกติ'}</span></td></tr>`;
             });
         }
     </script>
